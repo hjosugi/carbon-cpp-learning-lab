@@ -1,0 +1,31 @@
+# Carbon labs
+
+## Nightly smoke
+
+`nightly-smoke/`はpinned nightlyでcompile/link/runする最小例です。
+
+```bash
+../../scripts/bootstrap-carbon.sh
+../../scripts/run-carbon-smoke.sh
+```
+
+各fileを次の順で変更してください。
+
+1. `00_hello`: outputを変更し、compileとlinkを分けて実行する。
+2. `01_functions`: `Clamp`を追加し、boundary testをprintする。
+3. `02_control_flow`: `SumTo(0)`, `SumTo(10)`を試す。
+4. `03_tuple`: tupleを3要素にし、loop countを追加する。
+
+## Design labs
+
+`design-labs/`は公式designを読むための例です。nightly未実装またはsyntax driftによりcompileできない場合があります。
+
+学習手順:
+
+1. fileを読む。
+2. 期待するtype contractを日本語で書く。
+3. Compiler Explorerで試す。
+4. errorが実装不足かsyntax変更かを公式docs/releaseで切り分ける。
+5. C++23で同じcontractを実装する。
+
+`solutions/`は考え方の例です。先に見ず、自分のAPIを設計してください。

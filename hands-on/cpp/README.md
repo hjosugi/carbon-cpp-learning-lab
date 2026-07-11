@@ -1,0 +1,39 @@
+# C++23 comparison labs
+
+## 1. Result type
+
+`std::expected<Record, ParseError>`をexception版と比較します。invalid inputが通常eventであるparserに、なぜvalue resultが適するか説明してください。
+
+## 2. Zero-copy parse
+
+`product/loglens/src/parser.cpp`の`std::string_view`を`std::string`へ変え、allocation数とlifetime safetyのtradeoffを調べます。
+
+## 3. Exact vs approximate p95
+
+すべてのlatencyを`std::vector`へ保存するexact版を作り、fixed histogram版と比較します。
+
+- correctness error
+- update cost
+- report cost
+- memory at 100M lines
+
+## 4. Concepts vs checked generics
+
+C++ conceptで`Min`を実装します。definition bodyでconceptにないoperationを使った時のdiagnosticをCarbonの目標と比較します。
+
+## 5. API boundary
+
+histogramの`bucket_upper`をC ABIで公開します。exceptionを越境させず、fixed-width integerだけを使ってください。
+
+## 6. Production hardening
+
+次を1つずつ追加します。
+
+- stdin input (`--input -`)
+- max unique service guard
+- report schema version
+- Prometheus text output
+- benchmark target
+- fuzz target for `parse_line`
+
+対応issueは`issues/`にあります。

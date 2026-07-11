@@ -1,0 +1,6 @@
+.tools/
+build/
+product/loglens/build/
+dist/
+*.o
+*.partial

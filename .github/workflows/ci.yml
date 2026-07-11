@@ -1,0 +1,67 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cpp:
+    name: C++23 (${{ matrix.compiler }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Warnings
+        run: make -C product/loglens CXX=${{ matrix.compiler }} warnings
+      - name: Unit tests
+        run: make -C product/loglens CXX=${{ matrix.compiler }} test
+      - name: Release build
+        run: make -C product/loglens CXX=${{ matrix.compiler }} release
+      - name: Sample run
+        run: product/loglens/build/release/loglens --input product/loglens/samples/access.log
+
+  sanitizer:
+    name: ASan and UBSan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Sanitizer tests
+        env:
+          ASAN_DETECT_LEAKS: "1"
+        run: make -C product/loglens sanitize
+
+  fuzz:
+    name: Parser fuzz smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Run 10,000 parser fuzz cases
+        run: make -C product/loglens CXX=clang++ fuzz
+
+  package:
+    name: Reproducible package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Build package, SBOM, provenance and checksums
+        run: ./scripts/package-release.sh
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: loglens-release
+          path: |
+            dist/*.tar.gz
+            dist/*.spdx.json
+            dist/*.provenance.txt
+            dist/SHA256SUMS
+          if-no-files-found: error
