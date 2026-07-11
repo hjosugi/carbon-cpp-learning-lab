@@ -48,10 +48,10 @@ cat >"${dist_dir}/${package_name}.spdx.json" <<EOF
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "${package_name}",
-  "documentNamespace": "https://github.com/hjosugi/carbon-cpp-learning-lab/releases/tag/v${version}#sbom",
+  "documentNamespace": "https://github.com/hjosugi/carbon-cpp-learning/releases/tag/v${version}#sbom",
   "creationInfo": {
     "created": "${created}",
-    "creators": ["Tool: carbon-cpp-learning-lab/package-release.sh"]
+    "creators": ["Tool: carbon-cpp-learning/package-release.sh"]
   },
   "packages": [{
     "name": "LogLens",
