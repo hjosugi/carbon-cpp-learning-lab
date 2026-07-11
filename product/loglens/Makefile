@@ -1,5 +1,6 @@
 CXX ?= g++
 EXTRA_CXXFLAGS ?=
+FUZZ_LIBS ?=
 CPPFLAGS := -Iinclude
 CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -Wconversion -Wshadow $(EXTRA_CXXFLAGS)
 SOURCES := src/parser.cpp src/aggregator.cpp src/input.cpp src/c_api.cpp
@@ -44,7 +45,7 @@ fuzz:
 	@cp -R tests/corpus/. build/fuzz/corpus/
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O1 -g3 -fno-omit-frame-pointer \
 		-fsanitize=fuzzer,address,undefined src/parser.cpp tests/fuzz_parser.cpp \
-		-o build/fuzz/fuzz_parser
+		-o build/fuzz/fuzz_parser $(FUZZ_LIBS)
 	./build/fuzz/fuzz_parser -runs=10000 build/fuzz/corpus
 
 build/benchmark/generate: bench/generate.cpp
