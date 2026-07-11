@@ -14,6 +14,7 @@ clang version 22.1.8
 Passed:
 
 - C++23 warnings with `-Werror`
+- GitHub runnerのClangは対応版libc++を明示使用
 - parser/aggregation/histogram unit tests
 - CLI integration tests（exit 0/2/3/4/5、stdin、limits）
 - release build with `-O3 -DNDEBUG`

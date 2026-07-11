@@ -6,6 +6,8 @@
 - `bash`, `curl`, `tar`, `g++`, `make`
 - C++23: GCC 13+またはClang 17+
 
+`std::expected`の実装はcompiler frontendだけでなくC++ standard libraryにも依存します。CIのClang jobは対応版`libc++`を`-stdlib=libc++`で明示します。
+
 Carbon nightlyは限定platform向けです。native Windows用の安定版toolchainがある前提にはしません。
 
 ## Carbon nightly

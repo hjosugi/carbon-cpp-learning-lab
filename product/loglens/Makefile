@@ -1,6 +1,7 @@
 CXX ?= g++
+EXTRA_CXXFLAGS ?=
 CPPFLAGS := -Iinclude
-CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -Wconversion -Wshadow
+CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -Wconversion -Wshadow $(EXTRA_CXXFLAGS)
 SOURCES := src/parser.cpp src/aggregator.cpp src/input.cpp src/c_api.cpp
 
 .PHONY: all release debug test integration sanitize fuzz benchmark warnings clean
