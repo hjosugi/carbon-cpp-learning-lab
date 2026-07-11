@@ -16,24 +16,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - compiler: g++
-            extra_flags: ""
-          - compiler: clang++
-            extra_flags: -stdlib=libc++
+        compiler: [g++, clang++]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Install Clang C++ standard library
-        if: matrix.compiler == 'clang++'
-        run: sudo apt-get update && sudo apt-get install --yes libc++-dev libc++abi-dev
       - name: Compiler version
         run: ${{ matrix.compiler }} --version
       - name: Warnings
-        run: make -C product/loglens CXX=${{ matrix.compiler }} EXTRA_CXXFLAGS=${{ matrix.extra_flags }} warnings
+        run: make -C product/loglens CXX=${{ matrix.compiler }} warnings
       - name: Unit tests
-        run: make -C product/loglens CXX=${{ matrix.compiler }} EXTRA_CXXFLAGS=${{ matrix.extra_flags }} test
+        run: make -C product/loglens CXX=${{ matrix.compiler }} test
       - name: Release build
-        run: make -C product/loglens CXX=${{ matrix.compiler }} EXTRA_CXXFLAGS=${{ matrix.extra_flags }} release
+        run: make -C product/loglens CXX=${{ matrix.compiler }} release
       - name: Sample run
         run: product/loglens/build/release/loglens --input product/loglens/samples/access.log
 
@@ -54,14 +47,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Install Clang C++ standard library
-        run: sudo apt-get update && sudo apt-get install --yes libc++-dev libc++abi-dev
       - name: Compiler version
         run: clang++ --version
       - name: Run 10,000 parser fuzz cases
-        # Ubuntu's Clang 18 libFuzzer runtime is built against libstdc++.
-        # The target boundary is the C ABI LLVMFuzzerTestOneInput function.
-        run: make -C product/loglens CXX=clang++ EXTRA_CXXFLAGS=-stdlib=libc++ FUZZ_LIBS=-lstdc++ fuzz
+        run: make -C product/loglens CXX=clang++ fuzz
 
   package:
     name: Reproducible package
