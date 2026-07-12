@@ -1,0 +1,38 @@
+name: fuzz-long
+
+on:
+  schedule:
+    - cron: "17 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parser:
+    name: Parser fuzz 10 minutes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Compiler version
+        run: clang++ --version
+      - name: Run parser fuzz for 10 minutes
+        run: make -C product/loglens CXX=clang++ FUZZ_SECONDS=600 fuzz-long
+      - name: Record corpus hashes
+        if: always()
+        run: find product/loglens/build/fuzz/corpus -type f -print0 | sort -z | xargs -0 sha256sum | tee product/loglens/build/fuzz/CORPUS-SHA256SUMS
+      - name: Upload regression candidates and hashes
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: parser-fuzz-corpus-${{ github.run_id }}
+          path: |
+            product/loglens/build/fuzz/corpus
+            product/loglens/build/fuzz/CORPUS-SHA256SUMS
+            product/loglens/build/fuzz/crash-*
+            product/loglens/build/fuzz/leak-*
+            product/loglens/build/fuzz/oom-*
+            product/loglens/build/fuzz/timeout-*
+          if-no-files-found: warn
+          retention-days: 14

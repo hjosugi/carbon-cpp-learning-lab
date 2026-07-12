@@ -50,7 +50,9 @@ make warnings
 make test
 make sanitize
 make CXX=clang++ fuzz
+make CXX=clang++ FUZZ_SECONDS=600 fuzz-long
 make benchmark
+make resource-report
 make release
 ```
 
@@ -62,6 +64,8 @@ ASAN_DETECT_LEAKS=1 make sanitize
 
 ptrace制約のあるsandboxではleak detectionを0にし、ASan/UBSanのみを実行します。
 
+週次`fuzz-long` workflowは10分実行し、拡張corpus、crash候補、SHA-256一覧を14日間artifactとして保持します。crash inputは最小化・review後に`tests/corpus/`へ追加します。
+
 ## Resource limits
 
 ```bash
@@ -71,6 +75,8 @@ cat samples/access.log | ./build/release/loglens --input - \
 
 oversized lineまたはservice cardinality上限超過はexit `5`でfail closedします。
 duplicate optionはexit `2`です。`--version`はrelease versionを表示します。
+
+fail closedを選ぶ理由は、`other` serviceへ自動集約するとtenant/service identityが失われ、攻撃や設定誤りを正常trafficとして隠すためです。limit eventはstderrとexit `5`でobservableです。output先のdisk fullまたはclosed pipeはstderrとexit `3`になります。
 
 ## Exit codes
 

@@ -50,7 +50,8 @@ make release
 10. [Toolchain設計](docs/09-toolchain-design.md)
 11. [検証結果](docs/10-verification.md)
 12. [Product readiness review](docs/11-readiness-review.md)
-13. [Issuesバックログ](issues/README.md)
+13. [Report schema contract](docs/12-report-schema.md)
+14. [Issuesバックログ](issues/README.md)
 
 ## 完了条件
 

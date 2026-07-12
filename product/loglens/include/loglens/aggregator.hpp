@@ -38,6 +38,8 @@ struct ServiceStats {
   bool latency_sum_saturated{};
   std::array<std::uint64_t, 6> status_classes{};
   LatencyHistogram latency;
+
+  void add_latency(std::uint32_t value) noexcept;
 };
 
 class Aggregator {

@@ -1,4 +1,5 @@
 #include <charconv>
+#include <csignal>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -178,6 +179,7 @@ auto run(int argc, char **argv) -> int {
   }
 
   std::cout << loglens::render_json(aggregator);
+  std::cout.flush();
   if (!std::cout) {
     std::cerr << "loglens: write error\n";
     return 3;
@@ -188,6 +190,10 @@ auto run(int argc, char **argv) -> int {
 } // namespace
 
 auto main(int argc, char **argv) -> int {
+#ifdef SIGPIPE
+  // Convert a closed output pipe into the documented exit code 3.
+  std::signal(SIGPIPE, SIG_IGN);
+#endif
   try {
     return run(argc, argv);
   } catch (const std::bad_alloc &) {

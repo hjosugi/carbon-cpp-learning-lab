@@ -22,7 +22,10 @@ Passed:
 - AddressSanitizer
 - UndefinedBehaviorSanitizer
 - libFuzzer 10,000 runs
+- libFuzzer 10-minute local run（109,738,844 runs / 601 seconds）
+- scheduled/manual libFuzzer 10-minute workflowとcorpus artifact保存設定
 - deterministic 100,000-line benchmark smoke
+- 1,000,000-line peak RSS evidence（1 / 1,000 services）
 - shell syntax checks
 - release archive、SPDX SBOM、provenance、SHA-256
 

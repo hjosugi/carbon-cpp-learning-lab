@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "accepted": 1,
+  "malformed": 0,
+  "services": [
+    {"service": "api", "count": 1, "error_rate": 0, "latency_avg_ms": 17, "latency_max_ms": 17, "latency_p95_upper_ms": 31, "latency_sum_saturated": false}
+  ]
+}

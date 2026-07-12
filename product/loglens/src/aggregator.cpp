@@ -4,6 +4,7 @@
 #include <bit>
 #include <cmath>
 #include <cstdint>
+#include <iomanip>
 #include <limits>
 #include <sstream>
 #include <string>
@@ -37,6 +38,17 @@ auto LatencyHistogram::percentile_upper(double quantile) const noexcept
   return std::numeric_limits<std::uint32_t>::max();
 }
 
+void ServiceStats::add_latency(std::uint32_t value) noexcept {
+  if (latency_sum > std::numeric_limits<std::uint64_t>::max() - value) {
+    latency_sum = std::numeric_limits<std::uint64_t>::max();
+    latency_sum_saturated = true;
+  } else {
+    latency_sum += value;
+  }
+  latency_max = std::max(latency_max, value);
+  latency.add(value);
+}
+
 auto Aggregator::add(const Record& record) -> AddResult {
   auto existing = services_.find(std::string(record.service));
   if (existing == services_.end()) {
@@ -49,15 +61,7 @@ auto Aggregator::add(const Record& record) -> AddResult {
   ++stats.count;
   ++accepted_;
 
-  if (stats.latency_sum >
-      std::numeric_limits<std::uint64_t>::max() - record.latency_ms) {
-    stats.latency_sum = std::numeric_limits<std::uint64_t>::max();
-    stats.latency_sum_saturated = true;
-  } else {
-    stats.latency_sum += record.latency_ms;
-  }
-  stats.latency_max = std::max(stats.latency_max, record.latency_ms);
-  stats.latency.add(record.latency_ms);
+  stats.add_latency(record.latency_ms);
 
   const auto status_class = static_cast<std::size_t>(record.status / 100);
   ++stats.status_classes[status_class];
@@ -85,6 +89,7 @@ auto render_json(const Aggregator& aggregator) -> std::string {
   std::ranges::sort(names);
 
   std::ostringstream output;
+  output << std::setprecision(std::numeric_limits<double>::max_digits10);
   output << "{\n  \"schema_version\": 1,\n  \"accepted\": " << aggregator.accepted()
          << ",\n  \"malformed\": " << aggregator.malformed()
          << ",\n  \"services\": [";

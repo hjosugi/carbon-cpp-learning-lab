@@ -20,7 +20,8 @@ Current mitigations:
 - stdout/stderr separation
 
 既定値は1行1 MiB、10,000 servicesです。用途に合わせてCLIでより小さく設定できます。
-exact resource budgetと長時間soak testはIssues 016/017で継続追跡します。
+limit超過はsilent aggregationを行わずexit 5でfail closedします。disk fullとclosed pipeはexit 3です。
+exact resource budgetと100M-line soak/profileはIssue 016で継続追跡します。
 
 ## Reporting
 
