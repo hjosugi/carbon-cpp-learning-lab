@@ -69,3 +69,33 @@ jobs:
             dist/*.provenance.txt
             dist/SHA256SUMS
           if-no-files-found: error
+
+  resource:
+    name: Resource and benchmark evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Install GNU time
+        run: sudo apt-get update && sudo apt-get install --yes time
+      - name: Benchmark smoke
+        run: make -C product/loglens benchmark
+      - name: Measure one million records
+        run: |
+          bash product/loglens/bench/resource_report.sh 1000000 1
+          bash product/loglens/bench/resource_report.sh 1000000 1000
+      - name: Measure adversarial integration cases
+        run: |
+          mkdir -p product/loglens/build/benchmark
+          /usr/bin/time -v \
+            -o product/loglens/build/benchmark/resource-adversarial.txt \
+            bash product/loglens/tests/integration.sh \
+              product/loglens/build/release/loglens
+          grep -E 'Elapsed \(wall clock\)|Maximum resident set size|Exit status' \
+            product/loglens/build/benchmark/resource-adversarial.txt | \
+            tee product/loglens/build/benchmark/resource-adversarial.txt.summary
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: loglens-resource-evidence
+          path: product/loglens/build/benchmark/resource-*
+          if-no-files-found: error
